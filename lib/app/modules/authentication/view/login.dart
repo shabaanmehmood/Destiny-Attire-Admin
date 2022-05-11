@@ -38,7 +38,13 @@ class LoginScreen extends StatelessWidget {
         children:  <Widget>[
           Align(
             alignment: Alignment.center,
-            child: myText(context, "Already have an account ? Continue to Login", ColorsX.white, SizeConfig.screenHeight*.20, 10, 0, 10, FontWeight.w400, 18.0,),
+            child: Container(
+              margin: EdgeInsets.only(top: SizeConfig.screenHeight * .12),
+                child: Image.asset('assets/images/logo.png', height: 80, width: 80,)),
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: myText(context, "Already have an account ? Continue to Login", ColorsX.white, SizeConfig.screenHeight*.05, 10, 0, 10, FontWeight.w400, 18.0,),
           ),
           globalWidgets.myTextField(TextInputType.emailAddress, emailCtl, false, "Email ID" ),
           SizedBox(height: 15,),
