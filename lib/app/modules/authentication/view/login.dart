@@ -1,5 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,15 +14,30 @@ import '../../../utils/global_variables.dart';
 import '../../../utils/global_widgets.dart';
 import '../../../utils/size_config.dart';
 
+
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:path/path.dart';
+
 class LoginScreen extends StatelessWidget {
   TextEditingController emailCtl = new TextEditingController();
   TextEditingController passwordCtl = new TextEditingController();
   GlobalWidgets globalWidgets = GlobalWidgets();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async{
+        SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        return false;
+      },
+      child: Scaffold(
         resizeToAvoidBottomInset: false,
-      body: body(context),
+        body: body(context),
+      ),
     );
   }
 
@@ -106,7 +123,8 @@ class LoginScreen extends StatelessWidget {
           GlobalWidgets.showErrorToast(context, "Email not valid", 'Please provide valid email');
         }
         else{
-          loginNow(emailCtl.text.toString(),passwordCtl.text.toString(), context);
+          // loginNow(emailCtl.text.toString(),passwordCtl.text.toString(), context);
+          checkIfEmailExists(emailCtl.text.toString(),passwordCtl.text.toString(), context);
         }
       },
       child: Container(
@@ -181,7 +199,71 @@ class LoginScreen extends StatelessWidget {
           fontSize: fontSize)),),
     );
   }
+  // Future<void> getData(String email) async {
+  //   // Get docs from collection reference
+  //
+  //   GlobalWidgets.showProgressLoader("Validating Data");
+  //
+  //
+  //   // return documents.length == 1;
+  //
+  //
+  //   CollectionReference _collectionRef =
+  //   FirebaseFirestore.instance.collection('candidates');
+  //   QuerySnapshot querySnapshot = await _collectionRef.get();
+  //
+  //   // Get data from docs and convert map to List
+  //   final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+  //
+  //   print(allData);
+  //   GlobalWidgets.hideProgressLoader();
+  // }
 
+  Future<String> checkIfEmailExists(String email, String password, BuildContext context) async {
+    // Get docs from collection reference
+    String response = '';
+    GlobalWidgets.hideKeyboard(context);
+    GlobalWidgets.showProgressLoader("Validating Data");
+
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('admins')
+        .where('email', isEqualTo: email)
+        .where('password', isEqualTo: password)
+        .limit(1)
+        .get();
+
+    final List<DocumentSnapshot> documents = querySnapshot.docs;
+    GlobalWidgets.hideProgressLoader();
+    if(documents.isEmpty) {
+      errorDialog(context);
+    }
+    else {
+      print(documents.first);
+
+      String id = querySnapshot.docs[0].reference.id;
+      //parsing of data to save in shared preferences
+      for (var doc in querySnapshot.docs) {
+        // Getting data directly
+        Get.toNamed(Routes.MAIN_SCREEN);
+
+        // String religion = doc.get('religion');
+        // String caste = doc.get('caste');
+        // String subcaste = doc.get('subcaste');
+        // String sect = doc.get('sect');
+        // String account_created_at = doc.get('account_created_at');
+        // String mother_tongue = doc.get('mother_tongue');
+        // String phone = doc.get('primary_phone');
+        // String gender = doc.get('gender');
+        // saveDataInLocal(id,caste,religion,subcaste,sect,account_created_at,mother_tongue,phone,gender);
+        // debugPrint(id);
+        // Getting data from map
+        // Map<String, dynamic> data = doc.data();
+        // int age = data['age'];
+      }
+    }
+
+    return response;
+  }
    loginNow(String email, String password, BuildContext context) async{
 
      var _apiService = ApiService();
@@ -232,13 +314,39 @@ class LoginScreen extends StatelessWidget {
         dialogType: DialogType.ERROR,
         animType: AnimType.RIGHSLIDE,
         headerAnimationLoop: true,
-        title: 'Error',
+        title: 'Invalid Credentials',
         desc:
-        'Please try again',
+        'Please try again with valid email and password',
         btnOkOnPress: () {},
         btnOkIcon: Icons.cancel,
         btnOkColor: Colors.red)
       ..show();
+  }
+
+  Future<void> saveDataInLocal(String id, String caste, String religion, String subcaste,
+      String sect, String account_created_at, String mother_tongue, String phone, String gender) async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('id', "${id}");
+    prefs.setString('caste', "${caste}");
+    prefs.setString('subcaste', "${subcaste}");
+    prefs.setString('religion', "${religion}");
+    prefs.setString('sect', "${sect}");
+    prefs.setString('account_created_at', "${account_created_at}");
+    prefs.setString('mother_tongue', "${mother_tongue}");
+    prefs.setString('phone', "${phone}");
+    prefs.setString('gender', "${gender}");
+
+    print(prefs.getString('id'));
+    print(prefs.getString('caste'));
+    print(prefs.getString('subcaste'));
+    print(prefs.getString('religion'));
+    print(prefs.getString('sect'));
+    print(prefs.getString('account_created_at'));
+    print(prefs.getString('mother_tongue'));
+    print(prefs.getString('phone'));
+    print(prefs.getString('gender'));
+    Get.toNamed(Routes.ALL_CASTES_MAIN_PAGE);
   }
 
 }

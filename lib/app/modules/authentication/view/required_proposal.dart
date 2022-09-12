@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -1252,8 +1255,10 @@ class _RequiredProposalState extends State<RequiredProposal> {
               context, "City Demand", 'Provide your City demand');
         }
         else {
-          GlobalVariables.profession_demand =
-          listOfProfessions.isEmpty ? "Nil" : listOfProfessions.toString();
+          // GlobalVariables.profession_demand =
+          // listOfProfessions.isEmpty ? "Nil" : listOfProfessions.toString();
+          GlobalVariables.professionDemandListFirestore = listOfProfessions.isEmpty ?
+          GlobalVariables.professionDemandListFirestore : listOfProfessions;
           GlobalVariables.caste_demand =
           isAnyCasteSelected && isCasteSpecificSelected
               ? "3"
@@ -1274,6 +1279,7 @@ class _RequiredProposalState extends State<RequiredProposal> {
               myInformationCtl.text.trim().toString();
           print(GlobalVariables.caste_demand);
           print(GlobalVariables.profession_demand);
+          print(GlobalVariables.professionDemandListFirestore);
           print(GlobalVariables.age_limit);
           print(GlobalVariables.housing_demand_location);
           print(GlobalVariables.housing_demand_possession);
@@ -1355,7 +1361,8 @@ class _RequiredProposalState extends State<RequiredProposal> {
     userInfo['sect'] = GlobalVariables.sect;
     userInfo['caste'] = GlobalVariables.caste;
     userInfo['subcaste'] = GlobalVariables.subcaste;
-    userInfo['profession'] = GlobalVariables.profession;
+    // userInfo['profession'] = GlobalVariables.profession;
+    userInfo['profession'] = GlobalVariables.myProfessionListFirestore;
 
     userInfo['qualification'] = GlobalVariables.qualificatiion;
     userInfo['occupation'] =  GlobalVariables.occupation;
@@ -1375,7 +1382,8 @@ class _RequiredProposalState extends State<RequiredProposal> {
     userInfo['house_area'] = GlobalVariables.house_area;
     userInfo['additional_info'] = GlobalVariables.additional_info;
 
-    userInfo['profession_demand'] = GlobalVariables.profession_demand;
+    // userInfo['profession_demand'] = GlobalVariables.profession_demand;
+    userInfo['profession_demand'] = GlobalVariables.professionDemandListFirestore;
     userInfo['caste_demand'] = GlobalVariables.caste_demand;
     userInfo['age_limit'] = GlobalVariables.age_limit;
     userInfo['height_demand'] = GlobalVariables.height_demand;
@@ -1408,16 +1416,69 @@ class _RequiredProposalState extends State<RequiredProposal> {
     userInfo['payment_end_date'] = '0';
 
     print(userInfo);
-    GlobalWidgets.showProgressLoader("Please Wait");
-    final res = await _apiService.userSignUp(apiParams: userInfo);
-    GlobalWidgets.hideProgressLoader();
-    if (res) {
-//show success dialog
-      successDialog(GlobalVariables.signUpResponse);
+    checkIfEmailExists(GlobalVariables.email, userInfo);
+    // if(checkIfEmailExists(GlobalVariables.email, userInfo) == 'ok'){
+    //   ///email does not exist now we can add data.
+    //   GlobalWidgets.showProgressLoader("Please Wait");
+    //   // final res = await _apiService.userSignUp(apiParams: userInfo);
+    //   var collection = FirebaseFirestore.instance.collection('candidates');
+    //   var docRef = await collection.add(userInfo);
+    //   var documentId = docRef.id;
+    //   GlobalWidgets.hideProgressLoader();
+    //   successDialog(documentId);
+    // }
+    // else{
+    //   errorDialog();
+    // }
+//     if (res) {
+// //show success dialog
+//       successDialog(GlobalVariables.signUpResponse);
+//     }
+//     else {
+//       // Fluttertoast.showToast(
+//       //     msg: res.toString(),
+//       //     toastLength: Toast.LENGTH_LONG,
+//       //     gravity: ToastGravity.CENTER,
+//       //     timeInSecForIosWeb: 1,
+//       //     backgroundColor: Colors.red,
+//       //     textColor: Colors.white,
+//       //     fontSize: 16.0
+//       // );
+//       errorDialog();
+//     }
+  }
+  /// Check If Document Exists. This method is to check whether the user is already registered or not
+  /// so that we could create account or not.
+
+  Future<String> checkIfEmailExists(String email, Map<String, dynamic> userInfo) async {
+    // Get docs from collection reference
+    String response = '';
+    GlobalWidgets.showProgressLoader("Validating Data");
+
+    final QuerySnapshot result = await FirebaseFirestore.instance
+        .collection('candidates')
+        .where('email', isEqualTo: email)
+        // .limit(1)
+        .get();
+    final List<DocumentSnapshot> documents = result.docs;
+    if(documents.isEmpty) {
+      response = 'ok';
+
+      // final res = await _apiService.userSignUp(apiParams: userInfo);
+      var collection = FirebaseFirestore.instance.collection('candidates');
+      var docRef = await collection.add(userInfo);
+      var documentId = docRef.id;
+      GlobalWidgets.hideProgressLoader();
+      successDialog(documentId);
+      GlobalWidgets.hideProgressLoader();
     }
     else {
+      print(documents.first);
+      response = 'no';
+      GlobalWidgets.hideProgressLoader();
       errorDialog();
     }
+    return response;
   }
   formattedDate(){
     DateTime dateTime = DateTime.now();
@@ -1432,7 +1493,7 @@ class _RequiredProposalState extends State<RequiredProposal> {
         headerAnimationLoop: true,
         title: 'Error',
         desc:
-        'Please try again',
+        'Please try again. This email already exists.',
         btnOkOnPress: () {},
         btnOkIcon: Icons.cancel,
         btnOkColor: Colors.red)
@@ -1445,14 +1506,14 @@ class _RequiredProposalState extends State<RequiredProposal> {
     print('ID STORED '+ "${value}");
   }
   successDialog(String signUpResponse) {
-    String id = '';
-    if(signUpResponse.toString().contains('Data Submitted')){
-      id = signUpResponse.toString().split(".")[1];
-      // saveIdInLocal(id);
-    }
-    else{
-      print('no id found');
-    }
+    // String id = '';
+    // if(signUpResponse.toString().contains('Data Submitted')){
+    //   id = signUpResponse.toString().split(".")[1];
+    //   // saveIdInLocal(id);
+    // }
+    // else{
+    //   print('no id found');
+    // }
     return AwesomeDialog(
         context: context,
         animType: AnimType.LEFTSLIDE,
@@ -1466,7 +1527,7 @@ class _RequiredProposalState extends State<RequiredProposal> {
         //   // Get.toNamed(Routes.LOGIN_SCREEN);
         // },),
         showCloseIcon: true,
-        title: '${id} \n Rishta Nagar ID',
+        title: '${signUpResponse} \n Rishta Nagar ID',
         desc:
         'Account created successfully',// \n Save or remember ID to Log In' ,
         btnOkOnPress: () {
@@ -1476,7 +1537,7 @@ class _RequiredProposalState extends State<RequiredProposal> {
         },
         btnOkIcon: Icons.check_circle,
         onDissmissCallback: (type) {
-          debugPrint('Dialog Dissmiss from callback $type');
+          debugPrint('Dialog Dismiss from callback $type');
         })
       ..show();
   }

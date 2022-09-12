@@ -47,7 +47,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   checkWhereToGo() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if((prefs.getString('id') == null || (prefs.getString('caste') == null))){
+    if((prefs.getString('id') == null || (prefs.getString('caste') == null)
+        || (prefs.getString('id') == '') || (prefs.getString('caste') == ''))){
       Timer(
           Duration(seconds: 3),
               () => Get.toNamed(Routes.LOGIN_SCREEN));

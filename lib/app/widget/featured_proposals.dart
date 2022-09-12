@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -212,11 +213,14 @@ import '../utils/size_config.dart';
 List<String> imgList = [];
 class FeaturedProposals extends StatelessWidget {
   GlobalWidgets globalWidgets = GlobalWidgets();
-  final FeaturedModel? featuredModel;
-  FeaturedProposals({ this.featuredModel});
+  // final FeaturedModel? featuredModel;
+  final List<DocumentSnapshot>? documents;
+  // FeaturedProposals({ this.featuredModel});
+  FeaturedProposals({ this.documents});
   @override
   Widget build(BuildContext context) {
-    int length = featuredModel?.serverResponse.length ?? 0;
+    // int length = featuredModel?.serverResponse.length ?? 0;
+    int length = documents?.length ?? 0;
     return Container(
       height: SizeConfig.screenHeight*.35,
       width: SizeConfig.screenWidth,
@@ -227,7 +231,8 @@ class FeaturedProposals extends StatelessWidget {
               return GestureDetector(
                 onTap: (){
                   print(index);
-                  GlobalVariables.idOfProposal = "${featuredModel?.serverResponse[index].basicDetails.id}";
+                  // GlobalVariables.idOfProposal = "${featuredModel?.serverResponse[index].basicDetails.id}";
+                  GlobalVariables.idOfProposal = "${documents?[index].reference.id}";
                   GlobalVariables.isMyProfile = false;
                   print(GlobalVariables.idOfProposal);
                   Get.toNamed(Routes.PROPOSALS_DETAIL);
@@ -260,7 +265,8 @@ class FeaturedProposals extends StatelessWidget {
                                           ),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: 18.0,vertical: 6),
-                                            child: Text("${featuredModel?.serverResponse[index].basicDetails.caste}", style: GoogleFonts.mukta(textStyle: const TextStyle( color: ColorsX.yellowColor, fontWeight: FontWeight.w900,fontSize: 14),),),
+                                            // child: Text("${featuredModel?.serverResponse[index].basicDetails.caste}", style: GoogleFonts.mukta(textStyle: const TextStyle( color: ColorsX.yellowColor, fontWeight: FontWeight.w900,fontSize: 14),),),
+                                            child: Text("${documents?[index].get('caste')}", style: GoogleFonts.mukta(textStyle: const TextStyle( color: ColorsX.yellowColor, fontWeight: FontWeight.w900,fontSize: 14),),),
                                           ),),
                                       ),
                                     ],
@@ -272,7 +278,8 @@ class FeaturedProposals extends StatelessWidget {
                                         width: SizeConfig.screenWidth* .55,
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 2),
-                                          child: Text("${featuredModel?.serverResponse[index].basicDetails.qualification}",
+                                          // child: Text("${featuredModel?.serverResponse[index].basicDetails.qualification}",
+                                          child: Text("${documents?[index].get('qualification')}",
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
                                             style: GoogleFonts.mukta(textStyle: TextStyle( color: ColorsX.black, fontWeight: FontWeight.w400,
@@ -282,7 +289,8 @@ class FeaturedProposals extends StatelessWidget {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 2),
-                                        child: Text(accountCreated("${featuredModel?.serverResponse[index].others.featuredStartDate}"),
+                                        // child: Text(accountCreated("${featuredModel?.serverResponse[index].others.featuredStartDate}"),
+                                        child: Text(accountCreated("${documents?[index].get('featured_start_date')}"),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                           style: GoogleFonts.mukta(textStyle: TextStyle( color: ColorsX.red_danger, fontWeight: FontWeight.w400,
@@ -297,16 +305,19 @@ class FeaturedProposals extends StatelessWidget {
                                       Container(
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 0.0,vertical: 2),
-                                          child: Text(ageCalculate("${featuredModel?.serverResponse[index].basicDetails.dob}"), style: GoogleFonts.mukta(textStyle: const TextStyle( color: ColorsX.black,
+                                          // child: Text(ageCalculate("${featuredModel?.serverResponse[index].basicDetails.dob}"), style: GoogleFonts.mukta(textStyle: const TextStyle( color: ColorsX.black,
+                                          child: Text(ageCalculate("${documents?[index].get('dob')}"), style: GoogleFonts.mukta(textStyle: const TextStyle( color: ColorsX.black,
                                               fontWeight: FontWeight.w700,fontSize: 13),),),
                                         ),
                                         margin: EdgeInsets.only(left: 10),
                                       ),
-                                      "${featuredModel?.serverResponse[index].basicDetails.occupation}" == "null" ? Container() : Container(
+                                      // "${featuredModel?.serverResponse[index].basicDetails.occupation}" == "null" ? Container() : Container(
+                                      "${documents?[index].get('occupation')}" == "null" ? Container() : Container(
                                         width: SizeConfig.screenWidth* .55,
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 0.0,vertical: 2),
-                                          child: Text(heightCalculate(" | ${ featuredModel?.serverResponse[index].basicDetails.occupation}"),
+                                          // child: Text(heightCalculate(" | ${ featuredModel?.serverResponse[index].basicDetails.occupation}"),
+                                          child: Text(heightCalculate(" | ${ documents?[index].get('occupation')}"),
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
                                             style: GoogleFonts.mukta(textStyle: TextStyle( color: ColorsX.black, fontWeight: FontWeight.w500,
@@ -323,7 +334,8 @@ class FeaturedProposals extends StatelessWidget {
                                         width: SizeConfig.screenWidth* .47,
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 2),
-                                          child: Text("${featuredModel?.serverResponse[index].basicDetails.area}, ${featuredModel?.serverResponse[index].basicDetails.city}",
+                                          // child: Text("${featuredModel?.serverResponse[index].basicDetails.area}, ${featuredModel?.serverResponse[index].basicDetails.city}",
+                                          child: Text("${documents?[index].get('area')}, ${documents?[index].get('city')}",
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
                                             style: GoogleFonts.mukta(textStyle: TextStyle( color: ColorsX.black, fontWeight: FontWeight.w400,
@@ -335,7 +347,8 @@ class FeaturedProposals extends StatelessWidget {
                                       Container(
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 2),
-                                          child: Text("${featuredModel?.serverResponse[index].basicDetails.motherTongue} Speaking",
+                                          // child: Text("${featuredModel?.serverResponse[index].basicDetails.motherTongue} Speaking",
+                                          child: Text("${documents?[index].get('mother_tongue')} Speaking",
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
                                             style: GoogleFonts.mukta(textStyle: TextStyle( color: ColorsX.black, fontWeight: FontWeight.w400,

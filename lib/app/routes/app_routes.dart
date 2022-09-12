@@ -7,6 +7,9 @@ abstract class Routes {
   Routes._();
 
   static const LOGIN = _Paths.LOGIN;
+  static const MAIN_SCREEN = _Paths.MAIN_SCREEN;
+  static const NEW_CATEGORY = _Paths.NEW_CATEGORY;
+  static const NEW_PRODUCT = _Paths.NEW_PRODUCT;
   static const SPLASH_SCREEN = _Paths.SPLASH_SCREEN;
   static const SLIDER_SCREEN = _Paths.SLIDER_SCREEN;
   static const LOGIN_SCREEN = _Paths.LOGIN_SCREEN;
@@ -27,6 +30,9 @@ abstract class _Paths {
   static const SLIDER_SCREEN = '/slider-screen';
   static const SELECTION_SCREEN = '/selection-screen';
   static const LOGIN_SCREEN = '/login-screen';
+  static const MAIN_SCREEN = '/main-screen';
+  static const NEW_CATEGORY = '/new-category';
+  static const NEW_PRODUCT = '/new-product';
   static const BASIC_INFORMATION = '/basic-information';
   static const FAMILY_INFORMATION = '/family-information';
   static const REQUIRED_PROPOSAL = '/required-proposal';

@@ -1,4 +1,4 @@
-package com.epopiah.matrimonial_app
+package com.epopiah.destiny_attire
 
 import io.flutter.embedding.android.FlutterActivity
 

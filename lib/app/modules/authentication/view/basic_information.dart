@@ -932,7 +932,8 @@ class _BasicInformationState extends State<BasicInformation> {
           GlobalVariables.mother_tongue = motherTongueValue;
           GlobalVariables.caste = casteValue;
           GlobalVariables.subcaste = subCasteCtl.text.trim().toString();
-          GlobalVariables.profession = listOfProfessions.isEmpty ? 'Nil' : listOfProfessions.toString();
+          // GlobalVariables.profession = listOfProfessions.isEmpty ? 'Nil' : listOfProfessions.toString();
+          GlobalVariables.myProfessionListFirestore = listOfProfessions.isEmpty ? GlobalVariables.myProfessionListFirestore : listOfProfessions;
           GlobalVariables.religion = religionValue;
           GlobalVariables.sect = religionValue == 'Islam' ? maslakValue : 'Nil' ;
           GlobalVariables.qualificatiion = qualificationCtl.text.trim().toString();

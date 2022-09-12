@@ -1,3 +1,5 @@
+import 'package:Rishta_Nagar/app/modules/categories/add_new_product.dart';
+import 'package:Rishta_Nagar/app/modules/categories/new_category.dart';
 import 'package:get/get.dart';
 
 import '../modules/authentication/view/basic_information.dart';
@@ -6,6 +8,7 @@ import '../modules/authentication/view/login.dart';
 import '../modules/authentication/view/required_proposal.dart';
 import '../modules/filter/filter_screen.dart';
 import '../modules/main_page/edit_profile.dart';
+import '../modules/main_page/main_page.dart';
 import '../modules/main_page/main_page_all_castes.dart';
 import '../modules/matrimonial/view/slider_screen.dart';
 import '../modules/matrimonial/view/splash.dart';
@@ -32,6 +35,21 @@ class AppPages {
     GetPage(
       name: _Paths.LOGIN_SCREEN,
       page: () => LoginScreen(),
+      // binding: LoginBinding(),
+    ),
+    GetPage(
+      name: _Paths.MAIN_SCREEN,
+      page: () => MainScreen(),
+      // binding: LoginBinding(),
+    ),
+    GetPage(
+      name: _Paths.NEW_CATEGORY,
+      page: () => NewCategory(),
+      // binding: LoginBinding(),
+    ),
+    GetPage(
+      name: _Paths.NEW_PRODUCT,
+      page: () => NewProduct(),
       // binding: LoginBinding(),
     ),
     GetPage(

@@ -1,4 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -29,6 +30,8 @@ class _ProposalsListState extends State<ProposalsList> {
   CacheData cacheData = CacheData();
   ProposalListModel? proposalListModel;
   ByCasteProposalsModel? byCasteProposalsModel;
+  List<DocumentSnapshot> documentsByCastes = [];
+  List<DocumentSnapshot> documentsByProfession = [];
   String selectedCasteType = '';
   @override
   void initState() {
@@ -140,7 +143,8 @@ class _ProposalsListState extends State<ProposalsList> {
 
   }
   customItemDesign(BuildContext context){
-    int length = proposalListModel?.serverResponse.length ?? 0;
+    // int length = proposalListModel?.serverResponse.length ?? 0;
+    int length = documentsByProfession.length ?? 0;
     return ListView.separated(
         itemCount: length,
         separatorBuilder: (context, index) =>Divider(height: 1, color: ColorsX.light_orange),
@@ -149,7 +153,8 @@ class _ProposalsListState extends State<ProposalsList> {
         itemBuilder: (context, index){
           return GestureDetector(
             onTap: (){
-              GlobalVariables.idOfProposal = "${proposalListModel?.serverResponse[index].basicDetails.id}";
+              // GlobalVariables.idOfProposal = "${proposalListModel?.serverResponse[index].basicDetails.id}";
+              GlobalVariables.idOfProposal = "${documentsByProfession[index].reference.id}";
               GlobalVariables.isMyProfile = false;
               print(GlobalVariables.idOfProposal);
               Get.toNamed(Routes.PROPOSALS_DETAIL);
@@ -180,14 +185,19 @@ class _ProposalsListState extends State<ProposalsList> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      globalWidgets.myText(context, "${proposalListModel?.serverResponse[index].basicDetails.caste}", ColorsX.yellowColor, 5, 0, 0, 0, FontWeight.w900, 14),
-                      globalWidgets.myText(context, ageCalculate("${proposalListModel?.serverResponse[index].basicDetails.dob}") + " | " +heightCalculate("${proposalListModel?.serverResponse[index].basicDetails.height}"), ColorsX.white, 5, 0, 0, 0, FontWeight.w400, 12),
+                      // globalWidgets.myText(context, "${proposalListModel?.serverResponse[index].basicDetails.caste}", ColorsX.yellowColor, 5, 0, 0, 0, FontWeight.w900, 14),
+                      globalWidgets.myText(context, "${documentsByProfession[index].get('caste')}", ColorsX.yellowColor, 5, 0, 0, 0, FontWeight.w900, 14),
+                      // globalWidgets.myText(context, ageCalculate("${proposalListModel?.serverResponse[index].basicDetails.dob}") + " | " +heightCalculate("${proposalListModel?.serverResponse[index].basicDetails.height}"), ColorsX.white, 5, 0, 0, 0, FontWeight.w400, 12),
+                      globalWidgets.myText(context, ageCalculate("${documentsByProfession[index].get('dob')}") + " | " +heightCalculate("${documentsByProfession[index].get('height')}"), ColorsX.white, 5, 0, 0, 0, FontWeight.w400, 12),
                       Container(
                         width: SizeConfig.screenWidth* .55,
-                        child: globalWidgets.myTextCustom(context, "${proposalListModel?.serverResponse[index].basicDetails.occupation} | ${proposalListModel?.serverResponse[index].basicDetails.qualification}",
+                        // child: globalWidgets.myTextCustom(context, "${proposalListModel?.serverResponse[index].basicDetails.occupation} | ${proposalListModel?.serverResponse[index].basicDetails.qualification}",
+                        //     ColorsX.white, 5, 0, 0, 0, FontWeight.w400, 12),
+                        child: globalWidgets.myTextCustom(context, "${documentsByProfession[index].get('occupation')} | ${documentsByProfession[index].get('qualification')}",
                             ColorsX.white, 5, 0, 0, 0, FontWeight.w400, 12),
                       ),
-                      globalWidgets.myText(context, "${proposalListModel?.serverResponse[index].basicDetails.area}", ColorsX.white, 5, 0, 0, 5, FontWeight.w400, 12),
+                      // globalWidgets.myText(context, "${proposalListModel?.serverResponse[index].basicDetails.area}", ColorsX.white, 5, 0, 0, 5, FontWeight.w400, 12),
+                      globalWidgets.myText(context, "${documentsByProfession[index].get('area')}", ColorsX.white, 5, 0, 0, 5, FontWeight.w400, 12),
 
                     ],
                   ),
@@ -196,7 +206,8 @@ class _ProposalsListState extends State<ProposalsList> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      globalWidgets.myText(context, accountCreated("${proposalListModel?.serverResponse[index].others.accountCreatedAt}"), ColorsX.white, 0, 0, 0, 0, FontWeight.w400, 14),
+                      // globalWidgets.myText(context, accountCreated("${proposalListModel?.serverResponse[index].others.accountCreatedAt}"), ColorsX.white, 0, 0, 0, 0, FontWeight.w400, 14),
+                      globalWidgets.myText(context, accountCreated("${documentsByProfession[index].get('account_created_at')}"), ColorsX.white, 0, 0, 0, 0, FontWeight.w400, 14),
                       SizedBox(height: 3,),
                       // GestureDetector(
                       //     onTap: (){
@@ -225,7 +236,8 @@ class _ProposalsListState extends State<ProposalsList> {
     );
   }
   customItemDesignCaste(BuildContext context){
-    int length = byCasteProposalsModel?.serverResponse.length ?? 0;
+    // int length = byCasteProposalsModel?.serverResponse.length ?? 0;
+    int length = documentsByCastes.length ?? 0;
     return ListView.separated(
         itemCount: length,
         separatorBuilder: (context, index) =>Divider(height: 1, color: ColorsX.light_orange),
@@ -234,7 +246,8 @@ class _ProposalsListState extends State<ProposalsList> {
         itemBuilder: (context, index){
           return GestureDetector(
             onTap: (){
-              GlobalVariables.idOfProposal = "${byCasteProposalsModel?.serverResponse[index].basicDetails.id}";
+              // GlobalVariables.idOfProposal = "${byCasteProposalsModel?.serverResponse[index].basicDetails.id}";
+              GlobalVariables.idOfProposal = "${documentsByCastes[index].reference.id}";
               print(GlobalVariables.idOfProposal);
               GlobalVariables.isMyProfile = false;
               Get.toNamed(Routes.PROPOSALS_DETAIL);
@@ -265,15 +278,21 @@ class _ProposalsListState extends State<ProposalsList> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      globalWidgets.myText(context, "${byCasteProposalsModel?.serverResponse[index].basicDetails.caste}", ColorsX.yellowColor, 5, 0, 0, 0, FontWeight.w900, 14),
-                      globalWidgets.myText(context, ageCalculate("${byCasteProposalsModel?.serverResponse[index].basicDetails.dob}") + " | " +
-                          heightCalculate("${byCasteProposalsModel?.serverResponse[index].basicDetails.height}"), ColorsX.white, 5, 0, 0, 0, FontWeight.w400, 12),
+                      // globalWidgets.myText(context, "${byCasteProposalsModel?.serverResponse[index].basicDetails.caste}", ColorsX.yellowColor, 5, 0, 0, 0, FontWeight.w900, 14),
+                      globalWidgets.myText(context, "${documentsByCastes[index].get('caste')}", ColorsX.yellowColor, 5, 0, 0, 0, FontWeight.w900, 14),
+                      // globalWidgets.myText(context, ageCalculate("${byCasteProposalsModel?.serverResponse[index].basicDetails.dob}") + " | " +
+                      //     heightCalculate("${byCasteProposalsModel?.serverResponse[index].basicDetails.height}"), ColorsX.white, 5, 0, 0, 0, FontWeight.w400, 12),
+                      globalWidgets.myText(context, ageCalculate("${documentsByCastes[index].get('dob')}") + " | " +
+                          heightCalculate("${documentsByCastes[index].get('height')}"), ColorsX.white, 5, 0, 0, 0, FontWeight.w400, 12),
                       Container(
                         width: SizeConfig.screenWidth* .55,
-                        child: globalWidgets.myTextCustom(context, "${byCasteProposalsModel?.serverResponse[index].basicDetails.occupation} | ${byCasteProposalsModel?.serverResponse[index].basicDetails.qualification}",
+                        // child: globalWidgets.myTextCustom(context, "${byCasteProposalsModel?.serverResponse[index].basicDetails.occupation} | ${byCasteProposalsModel?.serverResponse[index].basicDetails.qualification}",
+                        //     ColorsX.white, 5, 0, 0, 0, FontWeight.w400, 12),
+                        child: globalWidgets.myTextCustom(context, "${documentsByCastes[index].get('occupation')} | ${documentsByCastes[index].get('qualification')}",
                             ColorsX.white, 5, 0, 0, 0, FontWeight.w400, 12),
                       ),
-                      globalWidgets.myText(context, "${byCasteProposalsModel?.serverResponse[index].basicDetails.area}", ColorsX.white, 5, 0, 0, 5, FontWeight.w400, 12),
+                      // globalWidgets.myText(context, "${byCasteProposalsModel?.serverResponse[index].basicDetails.area}", ColorsX.white, 5, 0, 0, 5, FontWeight.w400, 12),
+                      globalWidgets.myText(context, "${documentsByCastes[index].get('area')}", ColorsX.white, 5, 0, 0, 5, FontWeight.w400, 12),
 
                     ],
                   ),
@@ -282,7 +301,8 @@ class _ProposalsListState extends State<ProposalsList> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      globalWidgets.myText(context, accountCreated("${byCasteProposalsModel?.serverResponse[index].others.accountCreatedAt}"), ColorsX.white, 0, 0, 0, 0, FontWeight.w400, 14),
+                      // globalWidgets.myText(context, accountCreated("${byCasteProposalsModel?.serverResponse[index].others.accountCreatedAt}"), ColorsX.white, 0, 0, 0, 0, FontWeight.w400, 14),
+                      globalWidgets.myText(context, accountCreated("${documentsByCastes[index].get('account_created_at')}"), ColorsX.white, 0, 0, 0, 0, FontWeight.w400, 14),
                       SizedBox(height: 3,),
                       // GestureDetector(
                       //     onTap: (){
@@ -506,30 +526,81 @@ class _ProposalsListState extends State<ProposalsList> {
 
   void loadProfessionData() async{
 
-    var _apiService = ApiService();
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? gender = prefs.getString('gender');
+    // if(gender.toString() == 'Male'){
+    //   gender == 'Female';
+    // }else{
+    //   gender == 'Male';
+    // }
 
-    Map<String, dynamic> userInfo = Map();
+    GlobalWidgets.showProgressLoader("Please wait");
 
-    userInfo['gender'] = prefs.getString('gender');
-    userInfo['profession'] = GlobalVariables.valueChosen;
-
-    GlobalWidgets.showProgressLoader("Please Wait");
-    GlobalWidgets.hideKeyboard(context);
-    final res = await _apiService.byProfession(apiParams: userInfo);
-    GlobalWidgets.hideProgressLoader();
-    if (res is ProposalListModel) {
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('candidates')
+        .where('profession', arrayContainsAny: [GlobalVariables.valueChosen])
+        .where('gender', isNotEqualTo: gender)
+        .where('is_active_account', isEqualTo: '1')
+    // .limit(1)
+        .get();
+    final List<DocumentSnapshot> firestoreResponseList = querySnapshot.docs;
+    if(firestoreResponseList.isEmpty) {
+      errorDialog(context);
+    }
+    else {
       setState(() {
-        proposalListModel = res;
+        documentsByProfession = querySnapshot.docs;
+        // GlobalVariables.featuredModelLength = documentsByCastes.length ?? 0;
+        // GlobalVariables.featuredModelLength = featuredModel?.serverResponse.length ?? 0;
+        print('professions length' + documentsByProfession.length.toString());
       });
-      print('hurrah');
+      // print(documents.first);
+      //
+      // String id = querySnapshot.docs[0].reference.id;
+      // //parsing of data to save in shared preferences
+      // for (var doc in querySnapshot.docs) {
+      //   // Getting data directly
+      //
+      //   String religion = doc.get('religion');
+      //   String caste = doc.get('caste');
+      //   String subcaste = doc.get('subcaste');
+      //   String sect = doc.get('sect');
+      //   String account_created_at = doc.get('account_created_at');
+      //   String mother_tongue = doc.get('mother_tongue');
+      //   String phone = doc.get('primary_phone');
+      //   String gender = doc.get('gender');
+      //   saveDataInLocal(id,caste,religion,subcaste,sect,account_created_at,mother_tongue,phone,gender);
+      //   debugPrint(id);
+      //   // Getting data from map
+      //   // Map<String, dynamic> data = doc.data();
+      //   // int age = data['age'];
+      // }
+    }
+    GlobalWidgets.hideProgressLoader();
+    // var _apiService = ApiService();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    //
+    // Map<String, dynamic> userInfo = Map();
+    //
+    // userInfo['gender'] = prefs.getString('gender');
+    // userInfo['profession'] = GlobalVariables.valueChosen;
+    //
+    // GlobalWidgets.showProgressLoader("Please Wait");
+    // GlobalWidgets.hideKeyboard(context);
+    // final res = await _apiService.byProfession(apiParams: userInfo);
+    // GlobalWidgets.hideProgressLoader();
+    // if (res is ProposalListModel) {
+    //   setState(() {
+    //     proposalListModel = res;
+    //   });
+    //   print('hurrah');
       // Get.toNamed(Routes.ALL_CASTES_MAIN_PAGE);
 //show success dialog
 //        successDialog(GlobalVariables.signUpResponse);
-    }
-    else {
-      errorDialog(context);
-    }
+//     }
+//     else {
+//       errorDialog(context);
+//     }
   }
 
   errorDialog(BuildContext context) {
@@ -551,30 +622,81 @@ class _ProposalsListState extends State<ProposalsList> {
 
   void loadCasteData() async{
 
-    var _apiService = ApiService();
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? gender = prefs.getString('gender');
+    // if(gender.toString() == 'Male'){
+    //   gender == 'Female';
+    // }else{
+    //   gender == 'Male';
+    // }
 
-    Map<String, dynamic> userInfo = Map();
+    GlobalWidgets.showProgressLoader("Please wait");
 
-    userInfo['caste'] = GlobalVariables.valueChosen;
-    userInfo['gender'] = prefs.getString('gender');
-
-    GlobalWidgets.showProgressLoader("Please Wait");
-    GlobalWidgets.hideKeyboard(context);
-    final res = await _apiService.byCaste(apiParams: userInfo);
-    GlobalWidgets.hideProgressLoader();
-    if (res is ByCasteProposalsModel) {
-      setState(() {
-        byCasteProposalsModel = res;
-      });
-      print('hurrah');
-      // Get.toNamed(Routes.ALL_CASTES_MAIN_PAGE);
-//show success dialog
-//        successDialog(GlobalVariables.signUpResponse);
-    }
-    else {
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('candidates')
+        .where('caste', isEqualTo: GlobalVariables.valueChosen)
+        .where('gender', isNotEqualTo: gender)
+        .where('is_active_account', isEqualTo: '1')
+    // .limit(1)
+        .get();
+    final List<DocumentSnapshot> firestoreResponseList = querySnapshot.docs;
+    if(firestoreResponseList.isEmpty) {
       errorDialog(context);
     }
+    else {
+      setState(() {
+        documentsByCastes = querySnapshot.docs;
+        // GlobalVariables.featuredModelLength = documentsByCastes.length ?? 0;
+        // GlobalVariables.featuredModelLength = featuredModel?.serverResponse.length ?? 0;
+        print('castes length' + documentsByCastes.length.toString());
+      });
+      // print(documents.first);
+      //
+      // String id = querySnapshot.docs[0].reference.id;
+      // //parsing of data to save in shared preferences
+      // for (var doc in querySnapshot.docs) {
+      //   // Getting data directly
+      //
+      //   String religion = doc.get('religion');
+      //   String caste = doc.get('caste');
+      //   String subcaste = doc.get('subcaste');
+      //   String sect = doc.get('sect');
+      //   String account_created_at = doc.get('account_created_at');
+      //   String mother_tongue = doc.get('mother_tongue');
+      //   String phone = doc.get('primary_phone');
+      //   String gender = doc.get('gender');
+      //   saveDataInLocal(id,caste,religion,subcaste,sect,account_created_at,mother_tongue,phone,gender);
+      //   debugPrint(id);
+      //   // Getting data from map
+      //   // Map<String, dynamic> data = doc.data();
+      //   // int age = data['age'];
+      // }
+    }
+    GlobalWidgets.hideProgressLoader();
+//     var _apiService = ApiService();
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//
+//     Map<String, dynamic> userInfo = Map();
+//
+//     userInfo['caste'] = GlobalVariables.valueChosen;
+//     userInfo['gender'] = prefs.getString('gender');
+//
+//     GlobalWidgets.showProgressLoader("Please Wait");
+//     GlobalWidgets.hideKeyboard(context);
+//     final res = await _apiService.byCaste(apiParams: userInfo);
+//     GlobalWidgets.hideProgressLoader();
+//     if (res is ByCasteProposalsModel) {
+//       setState(() {
+//         byCasteProposalsModel = res;
+//       });
+//       print('hurrah');
+//       // Get.toNamed(Routes.ALL_CASTES_MAIN_PAGE);
+// //show success dialog
+// //        successDialog(GlobalVariables.signUpResponse);
+//     }
+    // else {
+    //   errorDialog(context);
+    // }
   }
 
   heightCalculate(String height) {

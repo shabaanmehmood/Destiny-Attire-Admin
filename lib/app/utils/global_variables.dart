@@ -34,6 +34,7 @@ class GlobalVariables {
   static String caste = '';
   static String subcaste = '';
   static String profession = '';
+  static List<dynamic> myProfessionListFirestore = [];
   static String qualificatiion = '';
   static String occupation = '';
   static String monthly_income = '';
@@ -50,6 +51,7 @@ class GlobalVariables {
   static String house_area = '';
   static String additional_info = '';
   static String profession_demand = '';
+  static List<dynamic> professionDemandListFirestore = [];
   static String caste_demand = '';
   static String age_limit = '';
   static String height_demand = '';

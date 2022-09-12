@@ -53,6 +53,13 @@ class DrawerWidget extends StatelessWidget {
               ),
               _createDrawerItem(Icons.share_rounded, 'Share with Friends', context),
               _createDrawerItem(Icons.bug_report, 'Report an issue', context),
+              Divider(
+                color: ColorsX.white,
+              ),
+              _createDrawerItem(Icons.logout, 'Logout', context),
+              Divider(
+                color: ColorsX.white,
+              ),
               // ListTile(
               //   title: Text('Powered by Epopiah', style: TextStyle(color: ColorsX.white),),
               //   onTap: () {},
@@ -66,7 +73,7 @@ class DrawerWidget extends StatelessWidget {
 
   _createDrawerItem(IconData icon, String text, BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: () async {
         if(text=='Filter'){
 
           Get.toNamed(Routes.FILTER_SCREEN);
@@ -117,7 +124,22 @@ class DrawerWidget extends StatelessWidget {
         }
         if(text=='Share with Friends'){
           Get.back();
-          Share.share('check to find rishta https://play.google.com/store/apps/details?id=com.epopiah.matrimonial_app');
+          Share.share('This is an amazing app to find best match for your marriage. You should at least try once by creating your profile. https://play.google.com/store/apps/details?id=com.epopiah.destiny_attire');
+        }
+        if(text=='Logout'){
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('id', '');
+          prefs.setString('caste', '');
+          prefs.setString('subcaste', '');
+          prefs.setString('religion', '');
+          prefs.setString('sect', '');
+          prefs.setString('account_created_at', '');
+          prefs.setString('mother_tongue', '');
+          prefs.setString('phone', '');
+          prefs.setString('gender', '');
+          Get.back();
+          Get.toNamed(Routes.LOGIN_SCREEN);
         }
 
       },
@@ -126,7 +148,7 @@ class DrawerWidget extends StatelessWidget {
            dense: true,
            leading: Icon(icon, color: ColorsX.white,),
            title: globalWidgets.myText(context, text, ColorsX.white, 0, 2, 0, 0, FontWeight.w600, 16),
-           onTap: (){
+           onTap: () async {
              if(text == "Filter"){
                Get.back();
                Get.toNamed(Routes.FILTER_SCREEN);
@@ -173,7 +195,22 @@ class DrawerWidget extends StatelessWidget {
              }
              if(text== "Share with Friends"){
                Get.back();
-               Share.share('Download App For Best Proposals. https://play.google.com/store/apps/details?id=com.epopiah.matrimonial_app');
+               Share.share('This is an amazing app to find best match for your marriage. You should at least try once by creating your profile. https://play.google.com/store/apps/details?id=com.epopiah.destiny_attire');
+             }
+             if(text== "Logout"){
+
+               SharedPreferences prefs = await SharedPreferences.getInstance();
+               prefs.setString('id', '');
+               prefs.setString('caste', '');
+               prefs.setString('subcaste', '');
+               prefs.setString('religion', '');
+               prefs.setString('sect', '');
+               prefs.setString('account_created_at', '');
+               prefs.setString('mother_tongue', '');
+               prefs.setString('phone', '');
+               prefs.setString('gender', '');
+               Get.back();
+               Get.toNamed(Routes.LOGIN_SCREEN);
              }
            },
          ),

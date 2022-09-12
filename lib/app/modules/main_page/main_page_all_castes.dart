@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,6 +33,7 @@ class _AllCastesMainPageState extends State<AllCastesMainPage> {
   CacheData cacheData = CacheData();
   String selectedCasteType = '';
   FeaturedModel? featuredModel;
+  List<DocumentSnapshot> documents = [];
   String? gender = '';
   SharedPreferences? prefs;
   @override
@@ -91,7 +93,8 @@ class _AllCastesMainPageState extends State<AllCastesMainPage> {
       child: ListView(
         children: [
           // profession(context),
-          featuredModel == null ? Container() : FeaturedProposals(featuredModel: featuredModel),
+          // featuredModel == null ? Container() : FeaturedProposals(featuredModel: featuredModel),
+          documents.isEmpty ? Container() : FeaturedProposals(documents: documents,),
           globalWidgets.myText(context, 'Professions', ColorsX.yellowColor, 20, 10, 0, 0, FontWeight.w700, 20),
           globalWidgets.myText(context, 'Matches available for theses professions', ColorsX.white, 0, 10, 0, 0, FontWeight.w400, 13),
           // castes(context,),
@@ -157,6 +160,7 @@ class _AllCastesMainPageState extends State<AllCastesMainPage> {
               GlobalVariables.isCaste = true;
               print(GlobalWidgets.casteList[index]);
               GlobalVariables.valueChosen = GlobalWidgets.casteList[index];
+              print(GlobalVariables.valueChosen);
               Get.toNamed(Routes.PROPOSALS_LIST);
             },
             child: index == 0 ? Container():ListTile(
@@ -238,29 +242,79 @@ class _AllCastesMainPageState extends State<AllCastesMainPage> {
 
   void getFeaturedProposals() async{
 
-    var _apiService = ApiService();
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? gender = prefs.getString('gender');
+    // if(gender.toString() == 'Male'){
+    //   gender == 'Female';
+    // }else{
+    //   gender == 'Male';
+    // }
 
-    Map<String, dynamic> userInfo = Map();
+    GlobalWidgets.showProgressLoader("Please wait");
 
-    userInfo['is_featured'] = '1';
-    userInfo['gender'] = prefs.getString('gender');
-
-    GlobalWidgets.showProgressLoader("Please Wait");
-    GlobalWidgets.hideKeyboard(context);
-    final res = await _apiService.getFeaturedProposals(apiParams: userInfo);
-    GlobalWidgets.hideProgressLoader();
-    if (res is FeaturedModel) {
-      setState(() {
-        featuredModel = res;
-        GlobalVariables.featuredModelLength = featuredModel?.serverResponse.length ?? 0;
-        print('featured length' + GlobalVariables.featuredModelLength.toString());
-      });
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('candidates')
+        .where('is_featured', isEqualTo: '1')
+        .where('gender', isNotEqualTo: gender)
+        .where('is_active_account', isEqualTo: '1')
+        // .limit(1)
+        .get();
+    final List<DocumentSnapshot> firestoreResponseList = querySnapshot.docs;
+    if(firestoreResponseList.isEmpty) {
+      print("No featured Proposals");
     }
     else {
-      print("No featured Proposals");
-      // errorDialog(context);
+      setState(() {
+        documents = querySnapshot.docs;
+        GlobalVariables.featuredModelLength = documents.length ?? 0;
+        // GlobalVariables.featuredModelLength = featuredModel?.serverResponse.length ?? 0;
+        print('featured length' + GlobalVariables.featuredModelLength.toString());
+      });
+      // print(documents.first);
+      //
+      // String id = querySnapshot.docs[0].reference.id;
+      // //parsing of data to save in shared preferences
+      // for (var doc in querySnapshot.docs) {
+      //   // Getting data directly
+      //
+      //   String religion = doc.get('religion');
+      //   String caste = doc.get('caste');
+      //   String subcaste = doc.get('subcaste');
+      //   String sect = doc.get('sect');
+      //   String account_created_at = doc.get('account_created_at');
+      //   String mother_tongue = doc.get('mother_tongue');
+      //   String phone = doc.get('primary_phone');
+      //   String gender = doc.get('gender');
+      //   saveDataInLocal(id,caste,religion,subcaste,sect,account_created_at,mother_tongue,phone,gender);
+      //   debugPrint(id);
+      //   // Getting data from map
+      //   // Map<String, dynamic> data = doc.data();
+      //   // int age = data['age'];
+      // }
     }
+    GlobalWidgets.hideProgressLoader();
+    // var _apiService = ApiService();
+    //
+    // Map<String, dynamic> userInfo = Map();
+    //
+    // userInfo['is_featured'] = '1';
+    // userInfo['gender'] = prefs.getString('gender');
+    //
+    // GlobalWidgets.showProgressLoader("Please Wait");
+    // GlobalWidgets.hideKeyboard(context);
+    // final res = await _apiService.getFeaturedProposals(apiParams: userInfo);
+    // GlobalWidgets.hideProgressLoader();
+    // if (res is FeaturedModel) {
+    //   setState(() {
+    //     featuredModel = res;
+    //     GlobalVariables.featuredModelLength = featuredModel?.serverResponse.length ?? 0;
+    //     print('featured length' + GlobalVariables.featuredModelLength.toString());
+    //   });
+    // }
+    // else {
+    //   print("No featured Proposals");
+    //   // errorDialog(context);
+    // }
   }
 
   heightCalculate(String height) {

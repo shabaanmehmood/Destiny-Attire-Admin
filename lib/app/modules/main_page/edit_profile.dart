@@ -89,7 +89,7 @@ class EditProfile extends StatelessWidget {
   directCall(BuildContext context, String text, FaIcon faIcon, Color fillColor,){
     return GestureDetector(
       onTap: (){
-        dialNumber(context, "+923230474685");
+        dialNumber(context, "+4915773705450");
       },
       child: Container(
         width: SizeConfig.screenWidth,
@@ -196,13 +196,13 @@ class EditProfile extends StatelessWidget {
     );
   }
   openWhatsapp(BuildContext context, String text) async{
-    var whatsapp ="+923230474685";
+    var whatsapp ="+4915773705450";
     var whatsappURl_android = '';
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? id = preferences.getString("id");
     String? newText = "${text} ${id}";
       // whatsappURl_android = "whatsapp://send?phone="+whatsapp+"&text=${text}${id}";
-      whatsappURl_android = "https://wa.me/923230474685?text= My Id is ${id}";
+      whatsappURl_android = "https://wa.me/4915773705450?text= My Id is ${id}";
     // var whatappURL_ios ="https://wa.me/$whatsapp?text=${Uri.parse("${text}")}";
     if(Platform.isAndroid){
       try{
