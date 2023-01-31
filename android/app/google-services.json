@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "753866199360",
+    "project_id": "destiny-attire",
+    "storage_bucket": "destiny-attire.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753866199360:android:a5fe7c05e19868992baaa5",
+        "android_client_info": {
+          "package_name": "com.epopiah.destiny_attire"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "753866199360-ib8hppfhdqf8t79p3dafh62e2fpig41b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.epopiah.destiny_attire",
+            "certificate_hash": "cad2ecabd8dfa65fe0775e8a3f4356fa6bfed57c"
+          }
+        },
+        {
+          "client_id": "753866199360-oa8ftaljh22lsbe3j4d5nbve9lpqo8ur.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAv3zri-Gtty9LAK6KZn0xnSbkCnhDpGAI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "753866199360-oa8ftaljh22lsbe3j4d5nbve9lpqo8ur.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
